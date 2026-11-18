@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boutique Guild Wars | Roblox</title>
+    <style>
+        :root {
+            --primary: #ff1e38;
+            --secondary: #121214;
+            --card-bg: #1a1a1f;
+            --card-hover: #23232a;
+            --text: #ffffff;
+            --text-muted: #9e9ea9;
+            --mythic: #d63384;
+            --legendary: #f59e0b;
+            --epic: #8b5cf6;
+            --free: #10b981;
+            --pass: #eab308;
+            --cash: #22c55e;
+            --effect: #06b6d4;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: #0b0b0e;
+            color: var(--text);
+            padding-bottom: 50px;
+        }
+
+        header {
+            background: linear-gradient(180deg, #18181f 0%, #0b0b0e 100%);
+            padding: 20px;
+            border-bottom: 1px solid #2a2a35;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto 15px auto;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 900;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .logo span {
+            color: var(--primary);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .edit-mode-btn {
+            background-color: #252530;
+            border: 1px solid #3f3f50;
+            color: #fff;
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .edit-mode-btn.active {
+            background-color: #10b981;
+            border-color: #10b981;
+            color: #000;
+        }
+
+        .robux-balance {
+            background-color: #1f1f27;
+            border: 1px solid #333340;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #fbbf24;
+        }
+
+        .controls {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .search-bar {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 10px;
+            border: 1px solid #2e2e3a;
+            background-color: #15151a;
+            color: white;
+            font-size: 1rem;
+            outline: none;
+        }
+
+        .search-bar:focus {
+            border-color: var(--primary);
+        }
+
+        .categories {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+            scrollbar-width: none;
+        }
+
+        .categories::-webkit-scrollbar {
+            display: none;
+        }
+
+        .cat-btn {
+            background-color: #1c1c24;
+            color: var(--text-muted);
+            border: 1px solid #2c2c38;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+
+        .cat-btn.active, .cat-btn:hover {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 25px auto 0 auto;
+            padding: 0 20px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+            gap: 16px;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid #282834;
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.2s, border-color 0.2s;
+            position: relative;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            border-color: #444455;
+            background-color: var(--card-hover);
+        }
+
+        .card-visual {
+            height: 155px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            padding: 15px;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        .card-visual img.real-photo {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 2;
+        }
+
+        .visual-illustration {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            width: 100%;
+            height: 100%;
+        }
+
+        .visual-icon {
+            font-size: 2.6rem;
+            filter: drop-shadow(0 4px 12px rgba(0,0,0,0.75));
+        }
+
+        .visual-label {
+            font-weight: 900;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.9);
+            padding: 4px 10px;
+            border-radius: 6px;
+            background: rgba(0,0,0,0.45);
+            backdrop-filter: blur(2px);
+        }
+
+        .badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 3;
+            font-size: 0.7rem;
+            font-weight: 800;
+            padding: 4px 8px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+        }
+
+        .badge-mythic { background-color: var(--mythic); color: white; }
+        .badge-legendary { background-color: var(--legendary); color: black; }
+        .badge-epic { background-color: var(--epic); color: white; }
+        .badge-free { background-color: var(--free); color: black; }
+        .badge-pass { background-color: var(--pass); color: black; }
+        .badge-offer { background-color: var(--primary); color: white; }
+        .badge-effect { background-color: var(--effect); color: black; }
+
+        .upload-overlay {
+            display: none;
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.75);
+            z-index: 4;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 8px;
+            cursor: pointer;
+            color: #fff;
+            font-weight: 800;
+            font-size: 0.85rem;
+            border: 2px dashed #10b981;
+        }
+
+        body.edit-active .upload-overlay {
+            display: flex;
+        }
+
+        .card-body {
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            justify-content: space-between;
+        }
+
+        .card-cat {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            margin-bottom: 4px;
+            font-weight: 700;
+        }
+
+        .card-title {
+            font-size: 1.05rem;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+
+        .card-desc {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 15px;
+        }
+
+        .buy-btn {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            background-color: var(--primary);
+            color: white;
+            font-weight: 800;
+            font-size: 0.95rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: opacity 0.2s, transform 0.1s;
+        }
+
+        .buy-btn:active {
+            transform: scale(0.98);
+        }
+
+        .buy-btn.free-btn {
+            background-color: #2e2e3a;
+            color: #a1a1aa;
+            cursor: default;
+        }
+
+        .buy-btn.effect-btn {
+            background-color: #16a34a;
+        }
+
+        .admin-bar {
+            display: none;
+            max-width: 1200px;
+            margin: 15px auto 0 auto;
+            padding: 12px 20px;
+            background: #14261c;
+            border: 1px solid #10b981;
+            border-radius: 10px;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            font-size: 0.85rem;
+        }
+
+        body.edit-active .admin-bar {
+            display: flex;
+        }
+
+        .admin-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .admin-btn {
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: none;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .btn-export { background: #10b981; color: #000; }
+        .btn-reset { background: #ef4444; color: #fff; }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="header-top">
+        <div class="logo">GUILD WARS <span>STORE</span></div>
+        <div class="header-actions">
+            <button class="edit-mode-btn" id="toggleEditBtn" onclick="toggleEditMode()">📷 Mode Photos</button>
+            <div class="robux-balance" title="Ton solde actuel">
+                <span>🪙</span> <span id="robux-count">132</span> R$
+            </div>
+        </div>
+    </div>
+    <div class="controls">
+        <input type="text" id="searchInput" class="search-bar" placeholder="Rechercher une arme, un skin, un passe, un effet...">
+        <div class="categories" id="categoryFilters">
+            <button class="cat-btn active" data-cat="all">Tout</button>
+            <button class="cat-btn" data-cat="vedette">En Vedette</button>
+            <button class="cat-btn" data-cat="armes">Armes</button>
+            <button class="cat-btn" data-cat="skins">Skins</button>
+            <button class="cat-btn" data-cat="passes">Passes</button>
+            <button class="cat-btn" data-cat="liquide">Liquide</button>
+            <button class="cat-btn" data-cat="effets_kill">Effets de Kill</button>
+            <button class="cat-btn" data-cat="traceurs">Traceurs</button>
+            <button class="cat-btn" data-cat="ciel">Ciel</button>
+            <button class="cat-btn" data-cat="ecran_kill">Écran de Kill</button>
+            <button class="cat-btn" data-cat="impact">Effets d'Impact</button>
+        </div>
+    </div>
+</header>
+
+<div class="admin-bar">
+    <span>📸 <strong>Mode Photos actif :</strong> Clique sur n'importe quelle carte pour importer directement sa photo depuis ta galerie (sauvegarde automatique).</span>
+    <div class="admin-actions">
+        <button class="admin-btn btn-reset" onclick="resetPhotos()">Réinitialiser photos</button>
+    </div>
+</div>
+
+<div class="container">
+    <div class="grid" id="shopGrid"></div>
+</div>
+
+<input type="file" id="hiddenFileInput" accept="image/*" style="display:none">
+
+<script>
+    const defaultArticles = [
+        // EN VEDETTE & PASSES
+        { id: "pack_depart", title: "Pack de Départ", cat: "vedette", sub: "Scar-H • SUV • + 150 000 $", price: 99, badge: "MEILLEURE OFFRE", badgeType: "offer", icon: "🚙", bg: "linear-gradient(135deg, #b91c1c, #f59e0b)", img: "" },
+        { id: "pass_clan", title: "Créer un Clan", cat: "passes", sub: "Fonde ton clan • À vie", price: 499, badge: "GAMEPASS", badgeType: "pass", icon: "🛡️", bg: "linear-gradient(135deg, #991b1b, #d97706)", img: "" },
+        { id: "pass_anim", title: "Passer les Animations", cat: "passes", sub: "Caisses ouvertes direct • À vie", price: 199, badge: "GAMEPASS", badgeType: "pass", icon: "⏩", bg: "linear-gradient(135deg, #7e22ce, #eab308)", img: "" },
+        { id: "pass_regard", title: "Regard du Tueur", cat: "passes", sub: "Tes yeux s'enflamment à chaque kill", price: 300, badge: "GAMEPASS", badgeType: "pass", icon: "👁️", bg: "linear-gradient(135deg, #be185d, #4f46e5)", img: "" },
+
+        // ARMES
+        { id: "arme_hanami", title: "Hanami Carabine", cat: "armes", sub: "Carabine • Aura sakura", price: 799, badge: "MYTHIQUE", badgeType: "mythic", icon: "🌸", bg: "linear-gradient(135deg, #be185d, #f472b6)", img: "" },
+        { id: "arme_g36", title: "G36", cat: "armes", sub: "Gratuite avec Do Not Doubt", price: 0, badge: "GRATUIT", badgeType: "free", icon: "🔫", bg: "linear-gradient(135deg, #1f2937, #374151)", img: "" },
+        { id: "arme_ombres", title: "Carabine des Ombres", cat: "armes", sub: "Fusil d'assaut", price: 699, badge: "EFFET", badgeType: "epic", icon: "🌑", bg: "linear-gradient(135deg, #7f1d1d, #111827)", img: "" },
+        { id: "arme_itachi", title: "Fal Itachi", cat: "armes", sub: "Fusil d'assaut", price: 900, badge: "EFFET", badgeType: "epic", icon: "🦅", bg: "linear-gradient(135deg, #991b1b, #b45309)", img: "" },
+        { id: "arme_bones", title: "Bones G3", cat: "armes", sub: "Fusil d'assaut", price: 850, badge: "EFFET", badgeType: "epic", icon: "🦴", bg: "linear-gradient(135deg, #78350f, #d97706)", img: "" },
+        { id: "arme_doraemon", title: "Doraemon", cat: "armes", sub: "Fusil d'assaut", price: 799, badge: "EFFET", badgeType: "epic", icon: "🤖", bg: "linear-gradient(135deg, #1d4ed8, #38bdf8)", img: "" },
+        { id: "arme_montana", title: "Montana Tec-9", cat: "armes", sub: "Pistolet-mitrailleur", price: 699, badge: "EFFET", badgeType: "epic", icon: "💎", bg: "linear-gradient(135deg, #a21caf, #f472b6)", img: "" },
+        { id: "arme_bunny", title: "Bunny G3", cat: "armes", sub: "Fusil d'assaut", price: 649, badge: "", badgeType: "", icon: "🐰", bg: "linear-gradient(135deg, #374151, #9ca3af)", img: "" },
+        { id: "arme_scarlet", title: "Scarlet", cat: "armes", sub: "Fusil d'assaut", price: 649, badge: "", badgeType: "", icon: "🎀", bg: "linear-gradient(135deg, #db2777, #f9a8d4)", img: "" },
+        { id: "arme_dragon", title: "Carbine Dragon", cat: "armes", sub: "Fusil d'assaut", price: 600, badge: "", badgeType: "", icon: "🐉", bg: "linear-gradient(135deg, #3f6212, #eab308)", img: "" },
+        { id: "arme_optic", title: "Optic ISO", cat: "armes", sub: "Fusil d'assaut", price: 600, badge: "EFFET", badgeType: "epic", icon: "🎯", bg: "linear-gradient(135deg, #0f766e, #111827)", img: "" },
+        { id: "arme_blackskull", title: "Black Skull AK", cat: "armes", sub: "Fusil d'assaut", price: 600, badge: "EFFET", badgeType: "epic", icon: "💀", bg: "linear-gradient(135deg, #18181b, #7f1d1d)", img: "" },
+        { id: "arme_eyssa", title: "Eyssa Mowa", cat: "armes", sub: "Fusil d'assaut", price: 549, badge: "", badgeType: "", icon: "🐺", bg: "linear-gradient(135deg, #3f3f46, #71717a)", img: "" },
+        { id: "arme_puppet", title: "G36 Puppet", cat: "armes", sub: "Fusil d'assaut", price: 525, badge: "EFFET", badgeType: "epic", icon: "🎭", bg: "linear-gradient(135deg, #27272a, #d4d4d8)", img: "" },
+        { id: "arme_ninja", title: "Carbine Ninja", cat: "armes", sub: "Fusil d'assaut", price: 499, badge: "EFFET", badgeType: "epic", icon: "🥷", bg: "linear-gradient(135deg, #991b1b, #18181b)", img: "" },
+        { id: "arme_sister", title: "Sister SR", cat: "armes", sub: "Fusil d'assaut", price: 499, badge: "EFFET", badgeType: "epic", icon: "✨", bg: "linear-gradient(135deg, #be185d, #fbcfe8)", img: "" },
+        { id: "arme_epouvantail", title: "G36 Épouvantail", cat: "armes", sub: "Fusil d'assaut", price: 475, badge: "EFFET", badgeType: "epic", icon: "🎃", bg: "linear-gradient(135deg, #9a3412, #f59e0b)", img: "" },
+        { id: "arme_jimmy", title: "Jimmy SM13", cat: "armes", sub: "Fusil d'assaut", price: 475, badge: "EFFET", badgeType: "epic", icon: "🔫", bg: "linear-gradient(135deg, #1f2937, #f472b6)", img: "" },
+        { id: "arme_sakura", title: "G36 Sakura", cat: "armes", sub: "Fusil d'assaut", price: 450, badge: "EFFET", badgeType: "epic", icon: "🌺", bg: "linear-gradient(135deg, #db2777, #fde047)", img: "" },
+        { id: "arme_kitsune", title: "Carbine Kitsune", cat: "armes", sub: "Fusil d'assaut", price: 449, badge: "EFFET", badgeType: "epic", icon: "🦊", bg: "linear-gradient(135deg, #b45309, #f3f4f6)", img: "" },
+        { id: "arme_mp5", title: "MP5 Repent", cat: "armes", sub: "Mitraillette", price: 425, badge: "EFFET", badgeType: "epic", icon: "⚡", bg: "linear-gradient(135deg, #6b21a8, #18181b)", img: "" },
+        { id: "arme_halloween", title: "Carbine Halloween", cat: "armes", sub: "Fusil d'assaut", price: 400, badge: "", badgeType: "", icon: "🕯️", bg: "linear-gradient(135deg, #c2410c, #ea580c)", img: "" },
+        { id: "arme_crona", title: "G36 Crona", cat: "armes", sub: "Fusil d'assaut", price: 400, badge: "", badgeType: "", icon: "⚙️", bg: "linear-gradient(135deg, #18181b, #52525b)", img: "" },
+
+        // SKINS
+        { id: "skin_galaxy", title: "Glowing Galaxy Aura", cat: "skins", sub: "Édition Limitée", price: 1499, badge: "MYTHIQUE", badgeType: "mythic", icon: "🌌", bg: "linear-gradient(135deg, #6d28d9, #ec4899)", img: "" },
+        { id: "skin_ghostface", title: "Ghostface Costume", cat: "skins", sub: "Skin de perso", price: 900, badge: "LÉGENDAIRE", badgeType: "legendary", icon: "👻", bg: "linear-gradient(135deg, #b45309, #18181b)", img: "" },
+        { id: "skin_scarygirl", title: "Scary Girl Costume", cat: "skins", sub: "Skin de perso", price: 900, badge: "LÉGENDAIRE", badgeType: "legendary", icon: "🧟‍♀️", bg: "linear-gradient(135deg, #b45309, #3f3f46)", img: "" },
+        { id: "skin_blackoverlay", title: "Black Overlay (Head)", cat: "skins", sub: "Skin de perso", price: 900, badge: "LÉGENDAIRE", badgeType: "legendary", icon: "👤", bg: "linear-gradient(135deg, #b45309, #09090b)", img: "" },
+        { id: "skin_whiteaura", title: "White Full Body Aura", cat: "skins", sub: "Skin de perso", price: 900, badge: "LÉGENDAIRE", badgeType: "legendary", icon: "✨", bg: "linear-gradient(135deg, #d97706, #52525b)", img: "" },
+        { id: "skin_itachi", title: "Itachi Akatsuki", cat: "skins", sub: "Skin de perso", price: 900, badge: "LÉGENDAIRE", badgeType: "legendary", icon: "☁️", bg: "linear-gradient(135deg, #991b1b, #d97706)", img: "" },
+        { id: "skin_shark", title: "Blue Shark Suit", cat: "skins", sub: "Skin de perso", price: 700, badge: "ÉPIQUE", badgeType: "epic", icon: "🦈", bg: "linear-gradient(135deg, #4c1d95, #0284c7)", img: "" },
+        { id: "skin_billy", title: "Billy The Puppet", cat: "skins", sub: "Skin de perso", price: 700, badge: "ÉPIQUE", badgeType: "epic", icon: "🤡", bg: "linear-gradient(135deg, #4c1d95, #18181b)", img: "" },
+        { id: "skin_reaper", title: "Grim Reaper Robe", cat: "skins", sub: "Skin de perso", price: 700, badge: "ÉPIQUE", badgeType: "epic", icon: "☠️", bg: "linear-gradient(135deg, #4c1d95, #d4d4d8)", img: "" },
+        { id: "skin_spiderman", title: "Spiderman Pajamas", cat: "skins", sub: "Skin de perso", price: 700, badge: "ÉPIQUE", badgeType: "epic", icon: "🕷️", bg: "linear-gradient(135deg, #4c1d95, #dc2626)", img: "" },
+        { id: "skin_batman", title: "Batman Pajamas", cat: "skins", sub: "Skin de perso", price: 700, badge: "ÉPIQUE", badgeType: "epic", icon: "🦇", bg: "linear-gradient(135deg, #4c1d95, #eab308)", img: "" },
+        { id: "skin_prisoner", title: "Striped Prisoner Outfit", cat: "skins", sub: "Skin de perso", price: 700, badge: "ÉPIQUE", badgeType: "epic", icon: "⛓️", bg: "linear-gradient(135deg, #4c1d95, #71717a)", img: "" },
+        { id: "skin_sheikh", title: "Arab Sheikh Outfit", cat: "skins", sub: "Skin de perso", price: 700, badge: "ÉPIQUE", badgeType: "epic", icon: "👑", bg: "linear-gradient(135deg, #4c1d95, #f4f4f5)", img: "" },
+        { id: "skin_ghillie", title: "Ghillie Suit", cat: "skins", sub: "Skin de perso", price: 700, badge: "ÉPIQUE", badgeType: "epic", icon: "🌿", bg: "linear-gradient(135deg, #4c1d95, #3f6212)", img: "" },
+        { id: "skin_symbiote", title: "Symbiote Costume", cat: "skins", sub: "Skin de perso", price: 700, badge: "ÉPIQUE", badgeType: "epic", icon: "🕸️", bg: "linear-gradient(135deg, #4c1d95, #09090b)", img: "" },
+        { id: "skin_gingy", title: "Gingy Shrek Costume", cat: "skins", sub: "Skin de perso", price: 700, badge: "ÉPIQUE", badgeType: "epic", icon: "🍪", bg: "linear-gradient(135deg, #4c1d95, #92400e)", img: "" },
+        { id: "skin_flash", title: "The Flash Costume", cat: "skins", sub: "Skin de perso", price: 700, badge: "ÉPIQUE", badgeType: "epic", icon: "⚡", bg: "linear-gradient(135deg, #4c1d95, #b91c1c)", img: "" },
+        { id: "skin_manbat", title: "Man-Bat Costume", cat: "skins", sub: "Skin de perso", price: 700, badge: "ÉPIQUE", badgeType: "epic", icon: "🧛", bg: "linear-gradient(135deg, #4c1d95, #27272a)", img: "" },
+        { id: "skin_blueman", title: "Blue Man Suit", cat: "skins", sub: "Skin de perso", price: 700, badge: "ÉPIQUE", badgeType: "epic", icon: "🔵", bg: "linear-gradient(135deg, #4c1d95, #1d4ed8)", img: "" },
+        { id: "skin_whiteghost", title: "White Ghost Face Costume", cat: "skins", sub: "Skin de perso", price: 700, badge: "ÉPIQUE", badgeType: "epic", icon: "🤍", bg: "linear-gradient(135deg, #4c1d95, #e4e4e7)", img: "" },
+
+        // LIQUIDE (CASH)
+        { id: "cash_100k", title: "100 000 $", cat: "liquide", sub: "Ajoutés à ta banque", price: 99, badge: "CASH", badgeType: "free", icon: "💵", bg: "linear-gradient(135deg, #15803d, #22c55e)", img: "" },
+        { id: "cash_500k", title: "500 000 $", cat: "liquide", sub: "Ajoutés à ta banque", price: 249, badge: "CASH", badgeType: "free", icon: "💰", bg: "linear-gradient(135deg, #166534, #16a34a)", img: "" },
+        { id: "cash_1m", title: "1 000 000 $", cat: "liquide", sub: "+11 % BONUS", price: 449, badge: "BONUS", badgeType: "free", icon: "🏦", bg: "linear-gradient(135deg, #14532d, #ca8a04)", img: "" },
+        { id: "cash_2_5m", title: "2 500 000 $", cat: "liquide", sub: "+25 % BONUS", price: 999, badge: "BONUS", badgeType: "free", icon: "🚚", bg: "linear-gradient(135deg, #15803d, #eab308)", img: "" },
+        { id: "cash_5m", title: "5 000 000 $", cat: "liquide", sub: "+39 % BONUS", price: 1799, badge: "BONUS", badgeType: "free", icon: "💎", bg: "linear-gradient(135deg, #166534, #f59e0b)", img: "" },
+        { id: "cash_10m", title: "10 000 000 $", cat: "liquide", sub: "+52 % BONUS", price: 3299, badge: "MEILLEUR PRIX", badgeType: "offer", icon: "👑", bg: "linear-gradient(135deg, #b91c1c, #eab308)", img: "" },
+
+        // EFFETS DE KILL (50 R$)
+        ...["Glitch", "Shatter", "Frostbite", "Toxique", "Thunder", "Black Hole", "Orbital Strike", "Disintegrate", "Smoke Bomb", "Soul Reaper", "Ascension", "Hellgate", "Jackpot", "Confetti", "Sakura", "Neon Pulse"].map((name, i) => ({
+            id: "kill_fx_" + i, title: name, cat: "effets_kill", sub: "Effet d'élimination", price: 50, badge: "EFFET KILL", badgeType: "effect", icon: "💥", bg: "linear-gradient(135deg, #0e7490, #1e1b4b)", img: ""
+        })),
+
+        // TRACEURS (50 R$)
+        ...["Halloween", "Bleu", "Purple", "Red", "Green", "Pink", "Yellow", "Cyan", "Azure", "Ice", "Teal", "Mint", "Emerald", "Lime", "Or", "Amber", "Orange", "Coral", "Peach", "Pourpre", "Ruby", "Rose", "Magenta", "Lavender", "Indigo", "Bronze", "Silver", "Sunset", "Inferno", "Ocean", "Frost", "Venom", "Aurora", "Galaxy", "Candy"].map((name, i) => ({
+            id: "tracer_" + i, title: "Traceur " + name, cat: "traceurs", sub: "Couleur des balles", price: 50, badge: "TRACEUR", badgeType: "effect", icon: "☄️", bg: "linear-gradient(135deg, #1d4ed8, #0f172a)", img: ""
+        })),
+
+        // CIEL (200 R$)
+        ...["Violet Sky", "Synthwave", "Electric Plasma", "Alien World", "Eclipse", "Matrix", "Toxic Haze", "Mint Breeze", "Tropical Lagoon", "Summer Day", "Rainbow Prism", "Rainy Day", "Thunderstorm", "Noir", "Sepia", "Desert Storm", "Pink", "Lavender", "Pourpre", "Sunset", "Ocean", "Mint", "Or", "Midnight", "Cotton Candy", "Lime", "Coral", "Arctic", "Teal", "Dusk", "Void", "Rose Gold"].map((name, i) => ({
+            id: "sky_" + i, title: "Ciel " + name, cat: "ciel", sub: "Ambiance du ciel en jeu", price: 200, badge: "CIEL", badgeType: "epic", icon: "🌅", bg: "linear-gradient(135deg, #4338ca, #701a75)", img: ""
+        })),
+
+        // ÉCRAN DE KILL (50 R$ / 150 R$ Perso)
+        ...["Soul Claimed", "Sleep", "Atomized", "Deleted", "Outplayed", "Too Easy", "Sent Home", "Lights Out", "Erased", "Clipped", "Folded", "Uninstalled", "GG", "Skill Issue", "Bye Bye", "Rekt", "Too Slow", "Respawn", "KO", "Boss", "Nap Time", "One Way", "Hunted", "Smoked"].map((name, i) => ({
+            id: "ko_" + i, title: "K.O. " + name, cat: "ecran_kill", sub: "Message vu par ta victime", price: 50, badge: "ÉCRAN KILL", badgeType: "legendary", icon: "🏆", bg: "linear-gradient(135deg, #78350f, #18181b)", img: ""
+        })),
+        { id: "ko_perso", title: "K.O. Perso", cat: "ecran_kill", sub: "Ta phrase personnalisée", price: 150, badge: "CUSTOM", badgeType: "offer", icon: "✍️", bg: "linear-gradient(135deg, #b45309, #eab308)", img: "" },
+
+        // EFFETS D'IMPACT (50 R$)
+        ...["Sang", "Confettis", "Étincelles", "Explosion", "Électrique", "Givre", "Toxique", "Glitch", "Néant", "Jackpot"].map((name, i) => ({
+            id: "impact_" + i, title: "Impact " + name, cat: "impact", sub: "Effet quand ta balle touche", price: 50, badge: "IMPACT", badgeType: "effect", icon: "🎯", bg: "linear-gradient(135deg, #9a3412, #18181b)", img: ""
+        }))
+    ];
+
+    // Chargement des photos sauvegardées localement
+    let savedPhotos = JSON.parse(localStorage.getItem('gw_store_photos') || '{}');
+    let articles = defaultArticles.map(item => ({
+        ...item,
+        img: savedPhotos[item.id] || item.img
+    }));
+
+    const grid = document.getElementById('shopGrid');
+    const searchInput = document.getElementById('searchInput');
+    const categoryFilters = document.getElementById('categoryFilters');
+    const fileInput = document.getElementById('hiddenFileInput');
+    let currentCat = 'all';
+    let editingItemId = null;
+
+    function toggleEditMode() {
+        document.body.classList.toggle('edit-active');
+        const btn = document.getElementById('toggleEditBtn');
+        btn.classList.toggle('active');
+        btn.innerText = document.body.classList.contains('edit-active') ? '✅ Terminer Photos' : '📷 Mode Photos';
+    }
+
+    function triggerPhotoUpload(id) {
+        editingItemId = id;
+        fileInput.click();
+    }
+
+    fileInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file || !editingItemId) return;
+
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            // Compression légère pour stocker facilement dans le navigateur
+            const img = new Image();
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                const maxW = 400;
+                const scale = maxW / img.width;
+                canvas.width = maxW;
+                canvas.height = img.height * scale;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.8);
+
+                savedPhotos[editingItemId] = compressedDataUrl;
+                localStorage.setItem('gw_store_photos', JSON.stringify(savedPhotos));
+
+                const target = articles.find(a => a.id === editingItemId);
+                if (target) target.img = compressedDataUrl;
+                renderShop();
+            };
+            img.src = event.target.result;
+        };
+        reader.readAsDataURL(file);
+        fileInput.value = '';
+    });
+
+    function resetPhotos() {
+        if (confirm("Supprimer toutes les photos importées et revenir aux visuels par défaut ?")) {
+            localStorage.removeItem('gw_store_photos');
+            savedPhotos = {};
+            articles = defaultArticles.map(item => ({ ...item, img: "" }));
+            renderShop();
+        }
+    }
+
+    function renderShop() {
+        const term = searchInput.value.toLowerCase();
+        grid.innerHTML = '';
+
+        const filtered = articles.filter(item => {
+            const matchCat = currentCat === 'all' || item.cat === currentCat;
+            const matchSearch = item.title.toLowerCase().includes(term) || item.sub.toLowerCase().includes(term);
+            return matchCat && matchSearch;
+        });
+
+        filtered.forEach(item => {
+            const card = document.createElement('div');
+            card.className = 'card';
+
+            const badgeHTML = item.badge ? `<span class="badge badge-${item.badgeType}">${item.badge}</span>` : '';
+            const imgHTML = item.img ? `<img class="real-photo" src="${item.img}" alt="${item.title}">` : '';
+            
+            let btnHTML = '';
+            if (item.price === 0) {
+                btnHTML = `<button class="buy-btn free-btn">RÉCUPÉRÉE</button>`;
+            } else {
+                const isEffect = ['effets_kill', 'traceurs', 'ciel', 'ecran_kill', 'impact'].includes(item.cat);
+                const btnClass = isEffect ? 'buy-btn effect-btn' : 'buy-btn';
+                btnHTML = `<button class="${btnClass}" onclick="buyItem('${item.title.replace(/'/g, "\'")}', ${item.price})">🪙 ${item.price} R$</button>`;
+            }
+
+            card.innerHTML = `
+                ${badgeHTML}
+                <div class="card-visual" style="background: ${item.bg};">
+                    ${imgHTML}
+                    <div class="visual-illustration">
+                        <div class="visual-icon">${item.icon}</div>
+                        <div class="visual-label">${item.title}</div>
+                    </div>
+                    <div class="upload-overlay" onclick="triggerPhotoUpload('${item.id}')">
+                        <span>📷 Choisir une photo</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div>
+                        <div class="card-cat">${item.cat.replace('_', ' ')}</div>
+                        <div class="card-title">${item.title}</div>
+                        <div class="card-desc">${item.sub}</div>
+                    </div>
+                    ${btnHTML}
+                </div>
+            `;
+            grid.appendChild(card);
+        });
+    }
+
+    function buyItem(title, price) {
+        const robuxEl = document.getElementById('robux-count');
+        let currentRobux = parseInt(robuxEl.innerText);
+
+        if (currentRobux >= price) {
+            currentRobux -= price;
+            robuxEl.innerText = currentRobux;
+            alert(`✅ Achat réussi : ${title} pour ${price} R$ !`);
+        } else {
+            alert(`❌ Robux insuffisants pour acheter "${title}" (${price} R$ requis).`);
+        }
+    }
+
+    searchInput.addEventListener('input', renderShop);
+
+    categoryFilters.addEventListener('click', (e) => {
+        if (e.target.classList.contains('cat-btn')) {
+            document.querySelectorAll('.cat-btn').forEach(btn => btn.classList.remove('active'));
+            e.target.classList.add('active');
+            currentCat = e.target.dataset.cat;
+            renderShop();
+        }
+    });
+
+    renderShop();
+</script>
+
+</body>
+</html>
